@@ -69,4 +69,4 @@ In the README file, we should be able to find all the information necessary to r
 
 ### Delivery
 
-If your repository is private, please share it with daniel.rosiak@chalhoub.com
+If your repository is private, please share it with @daniel-rosiak
