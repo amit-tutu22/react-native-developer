@@ -5,16 +5,23 @@ import { theme } from "@/presentation/theme";
 type CatalogFallbackProps = {
   mode?: "loading" | "error";
   onRetry?: () => void;
+  message?: string;
+  retryTestID?: string;
 };
 
-export function CatalogFallback({ mode = "loading", onRetry }: CatalogFallbackProps) {
+export function CatalogFallback({
+  mode = "loading",
+  onRetry,
+  message = "The catalog could not be loaded.",
+  retryTestID = "catalog-retry",
+}: CatalogFallbackProps) {
   const isError = mode === "error";
   return (
     <View style={styles.page} testID={isError ? "catalog-error" : "catalog-loading"}>
       {isError ? (
         <>
-          <Text style={styles.message}>The catalog could not be loaded.</Text>
-          <Pressable accessibilityRole="button" onPress={onRetry} style={styles.button} testID="catalog-retry">
+          <Text style={styles.message}>{message}</Text>
+          <Pressable accessibilityRole="button" onPress={onRetry} style={styles.button} testID={retryTestID}>
             <Text style={styles.buttonLabel}>Retry</Text>
           </Pressable>
         </>

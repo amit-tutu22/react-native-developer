@@ -1,3 +1,4 @@
+import { useRouter } from "expo-router";
 import { useEffect, useRef } from "react";
 
 import { defaultColor, defaultSize } from "@/domain/product";
@@ -27,6 +28,7 @@ import {
 
 export function ProductScreenContainer() {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const category = useAppSelector(selectActiveCategory);
   const searchQuery = useAppSelector(selectSearchQuery);
   const selectedSize = useAppSelector(selectSelectedSize);
@@ -84,6 +86,7 @@ export function ProductScreenContainer() {
       onCloseLightbox={() => dispatch(lightboxClosed())}
       onColorChange={(colorId) => dispatch(colorSelected(colorId))}
       onLogoPress={() => dispatch(logoPressed())}
+      onOpenAccount={() => router.push("/account")}
       onOpenImage={(imageUrl) => dispatch(lightboxOpened(imageUrl))}
       onSearchChange={(value) => dispatch(searchChanged(value))}
       onSizeChange={(size) => dispatch(sizeSelected(size))}
