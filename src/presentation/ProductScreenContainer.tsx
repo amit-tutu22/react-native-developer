@@ -1,29 +1,41 @@
 import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 
-import { addLine, cartCount, type CartLine } from "@/domain/cart";
-import {
-  defaultColor,
-  defaultSize,
-  filterRelatedProducts,
-  isProductVisible,
-  type Category,
-  type Size,
-} from "@/domain/product";
-import type { Catalog } from "@/domain/product";
+import { defaultColor, defaultSize, type Catalog } from "@/domain/product";
 import { fixtureCatalog } from "@/infrastructure/fixture/fixtureCatalog";
 import { ProductScreen } from "@/presentation/ProductScreen";
 import { theme } from "@/presentation/theme";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import {
+  addedToBag,
+  categorySelected,
+  colorSelected,
+  lightboxClosed,
+  lightboxOpened,
+  logoPressed,
+  searchChanged,
+  selectActiveCategory,
+  selectCartCount,
+  selectFilteredRelated,
+  selectLightboxImageUrl,
+  selectLightboxOpen,
+  selectProductVisible,
+  selectSearchQuery,
+  selectSelectedColor,
+  selectSelectedSize,
+  sizeSelected,
+} from "@/store/productUiSlice";
 
 export function ProductScreenContainer() {
+  const dispatch = useAppDispatch();
+  const category = useAppSelector(selectActiveCategory);
+  const searchQuery = useAppSelector(selectSearchQuery);
+  const selectedSize = useAppSelector(selectSelectedSize);
+  const selectedColorId = useAppSelector(selectSelectedColor);
+  const count = useAppSelector(selectCartCount);
+  const lightboxOpen = useAppSelector(selectLightboxOpen);
+  const lightboxImageUrl = useAppSelector(selectLightboxImageUrl);
   const [catalog, setCatalog] = useState<Catalog | null>(null);
-  const [category, setCategory] = useState<Category>("MEN");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedSize, setSelectedSize] = useState<Size | null>(null);
-  const [selectedColorId, setSelectedColorId] = useState<string | null>(null);
-  const [cart, setCart] = useState<CartLine[]>([]);
-  const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [lightboxImageUrl, setLightboxImageUrl] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -32,13 +44,19 @@ export function ProductScreenContainer() {
         return;
       }
       setCatalog(next);
-      setSelectedSize(defaultSize(next.product.sizes));
-      setSelectedColorId(defaultColor(next.product.colors)?.id ?? null);
+      const size = defaultSize(next.product.sizes);
+      const color = defaultColor(next.product.colors);
+      if (size) {
+        dispatch(sizeSelected(size));
+      }
+      if (color) {
+        dispatch(colorSelected(color.id));
+      }
     });
     return () => {
       active = false;
     };
-  }, []);
+  }, [dispatch]);
 
   if (!catalog) {
     return (
@@ -52,7 +70,7 @@ export function ProductScreenContainer() {
 
   return (
     <ProductScreen
-      cartCount={cartCount(cart)}
+      cartCount={count}
       category={category}
       lightboxImageUrl={lightboxImageUrl}
       lightboxOpen={lightboxOpen}
@@ -60,35 +78,24 @@ export function ProductScreenContainer() {
         if (!selectedSize || !selectedColorId) {
           return;
         }
-        setCart((current) =>
-          addLine(current, {
+        dispatch(
+          addedToBag({
             productId: product.id,
             size: selectedSize,
             colorId: selectedColorId,
           }),
         );
       }}
-      onCategoryChange={setCategory}
-      onCloseLightbox={() => {
-        setLightboxOpen(false);
-        setLightboxImageUrl(null);
-      }}
-      onColorChange={setSelectedColorId}
-      onLogoPress={() => {
-        setCategory("MEN");
-        setSearchQuery("");
-        setLightboxOpen(false);
-        setLightboxImageUrl(null);
-      }}
-      onOpenImage={(imageUrl) => {
-        setLightboxImageUrl(imageUrl);
-        setLightboxOpen(true);
-      }}
-      onSearchChange={(value) => setSearchQuery(value.trim())}
-      onSizeChange={setSelectedSize}
+      onCategoryChange={(next) => dispatch(categorySelected(next))}
+      onCloseLightbox={() => dispatch(lightboxClosed())}
+      onColorChange={(colorId) => dispatch(colorSelected(colorId))}
+      onLogoPress={() => dispatch(logoPressed())}
+      onOpenImage={(imageUrl) => dispatch(lightboxOpened(imageUrl))}
+      onSearchChange={(value) => dispatch(searchChanged(value))}
+      onSizeChange={(size) => dispatch(sizeSelected(size))}
       product={product}
-      productVisible={isProductVisible(category, product.category)}
-      relatedProducts={filterRelatedProducts(catalog.relatedProducts, searchQuery)}
+      productVisible={selectProductVisible(category, product.category)}
+      relatedProducts={selectFilteredRelated(catalog.relatedProducts, searchQuery)}
       searchQuery={searchQuery}
       selectedColorId={selectedColorId}
       selectedSize={selectedSize}
