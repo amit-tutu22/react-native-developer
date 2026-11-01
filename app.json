@@ -7,11 +7,21 @@
     "icon": "./assets/images/icon.png",
     "scheme": "catalog",
     "userInterfaceStyle": "light",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "enabled": true,
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 0
+    },
     "ios": {
       "icon": "./assets/expo.icon",
-      "supportsTablet": false
+      "supportsTablet": false,
+      "bundleIdentifier": "com.catalog.app"
     },
     "android": {
+      "package": "com.catalog.app",
       "adaptiveIcon": {
         "backgroundColor": "#ffffff",
         "foregroundImage": "./assets/images/android-icon-foreground.png",

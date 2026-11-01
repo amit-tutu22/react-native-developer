@@ -92,6 +92,30 @@ Each assessment step is its own branch, cut from the previous step.
 - `step-3-remote-catalog` loads `data/catalog.json` over HTTP.
 - `step-4-account` adds My Account.
 - `step-5-tests` adds this suite and this runbook.
+- `step-6-eas` adds the EAS Build and EAS Update configuration.
+
+## EAS Build and updates
+
+`eas.json` has `development`, `preview`, and `production` profiles. Each profile receives `EXPO_PUBLIC_CATALOG_URL`, so a cloud build still loads the catalog. `runtimeVersion` follows the app version in `app.json`, which is what an OTA update must match. No tokens are committed.
+
+These commands need an Expo account. They were not run in this workspace because no Expo login is available here.
+
+```bash
+npx eas-cli login
+npx eas-cli init
+npx eas-cli update:configure
+npx eas-cli build -p ios --profile preview
+npx eas-cli build -p android --profile preview
+npx eas-cli update --branch preview --message "Catalog update"
+```
+
+`eas init` writes `extra.eas.projectId`. `eas update:configure` writes `updates.url`. After the binaries exist, `eas update` publishes a JavaScript update onto that runtime. Build URLs from the Expo dashboard can be pasted below once those commands succeed.
+
+After login, print the resolved preview profile with:
+
+```bash
+npx eas-cli config -p ios -e preview --non-interactive
+```
 
 ## Challenges
 
