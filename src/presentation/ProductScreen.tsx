@@ -9,8 +9,8 @@ import { CategoryNav } from "@/presentation/components/CategoryNav";
 import { ColorSelector } from "@/presentation/components/ColorSelector";
 import { Description } from "@/presentation/components/Description";
 import { EmptyCatalog } from "@/presentation/components/EmptyCatalog";
+import { Header } from "@/presentation/components/Header";
 import { ImageLightbox } from "@/presentation/components/ImageLightbox";
-import { Logo } from "@/presentation/components/Logo";
 import { ProductImage } from "@/presentation/components/ProductImage";
 import { RelatedProducts } from "@/presentation/components/RelatedProducts";
 import { SearchBar } from "@/presentation/components/SearchBar";
@@ -29,6 +29,7 @@ export type ProductScreenProps = {
   lightboxOpen: boolean;
   lightboxImageUrl: string | null;
   onLogoPress: () => void;
+  onOpenAccount: () => void;
   onCategoryChange: (category: Category) => void;
   onSearchChange: (query: string) => void;
   onSizeChange: (size: Size) => void;
@@ -50,6 +51,7 @@ export function ProductScreen({
   lightboxOpen,
   lightboxImageUrl,
   onLogoPress,
+  onOpenAccount,
   onCategoryChange,
   onSearchChange,
   onSizeChange,
@@ -62,7 +64,7 @@ export function ProductScreen({
     <View style={styles.page}>
       <SafeAreaView edges={["top", "bottom"]} style={styles.safe}>
         <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-          <Logo onPress={onLogoPress} />
+          <Header onAccountPress={onOpenAccount} onLogoPress={onLogoPress} />
           <CategoryNav categories={CATEGORIES} onSelect={onCategoryChange} selected={category} />
           <SearchBar onChange={onSearchChange} value={searchQuery} />
           {productVisible ? (

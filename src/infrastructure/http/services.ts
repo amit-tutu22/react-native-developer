@@ -4,11 +4,17 @@ export type AppBaseQuery = BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
 
 type Services = {
   catalogBaseQuery: AppBaseQuery;
+  accountBaseQuery: AppBaseQuery;
 };
 
-let services: Services = {
-  catalogBaseQuery: fetchBaseQuery({ baseUrl: "" }),
-};
+function createDefaultServices(): Services {
+  return {
+    catalogBaseQuery: fetchBaseQuery({ baseUrl: "" }),
+    accountBaseQuery: fetchBaseQuery({ baseUrl: "" }),
+  };
+}
+
+let services: Services = createDefaultServices();
 
 export function configureServices(next: Partial<Services>) {
   services = { ...services, ...next };
@@ -19,7 +25,5 @@ export function getServices(): Services {
 }
 
 export function resetServices() {
-  services = {
-    catalogBaseQuery: fetchBaseQuery({ baseUrl: "" }),
-  };
+  services = createDefaultServices();
 }

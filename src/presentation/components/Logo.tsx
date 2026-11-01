@@ -17,8 +17,7 @@ export function Logo({ onPress }: LogoProps) {
 const styles = StyleSheet.create({
   hit: {
     alignItems: "center",
-    paddingTop: 8,
-    paddingBottom: 28,
+    paddingVertical: 8,
   },
   wordmark: {
     color: theme.color.text,
