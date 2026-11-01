@@ -70,3 +70,13 @@ In the README file, we should be able to find all the information necessary to r
 ### Delivery
 
 If your repository is private, please share it with @daniel-rosiak & @white-space-dev
+
+## Catalog data
+
+Product and related-product images are loaded at runtime from `EXPO_PUBLIC_CATALOG_URL`. The app does not import `data/catalog.json`.
+
+The committed URL points at the raw GitHub copy of that file on `step-3-remote-catalog`:
+
+`https://raw.githubusercontent.com/amit-tutu22/react-native-developer/step-3-remote-catalog/data/catalog.json`
+
+That address stands in for an AWS or GCP bucket. Replace the variable with a bucket URL if you host the same JSON elsewhere. Restart Expo after changing it.

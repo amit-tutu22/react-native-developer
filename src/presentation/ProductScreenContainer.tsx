@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { useEffect, useRef } from "react";
 
-import { defaultColor, defaultSize, type Catalog } from "@/domain/product";
-import { fixtureCatalog } from "@/infrastructure/fixture/fixtureCatalog";
+import { defaultColor, defaultSize } from "@/domain/product";
+import { useGetCatalogQuery } from "@/infrastructure/http/catalogApi";
+import { CatalogFallback } from "@/presentation/components/CatalogFallback";
 import { ProductScreen } from "@/presentation/ProductScreen";
-import { theme } from "@/presentation/theme";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   addedToBag,
@@ -35,35 +34,30 @@ export function ProductScreenContainer() {
   const count = useAppSelector(selectCartCount);
   const lightboxOpen = useAppSelector(selectLightboxOpen);
   const lightboxImageUrl = useAppSelector(selectLightboxImageUrl);
-  const [catalog, setCatalog] = useState<Catalog | null>(null);
+  const catalogQuery = useGetCatalogQuery();
+  const catalog = catalogQuery.data;
+  const defaultsApplied = useRef(false);
 
   useEffect(() => {
-    let active = true;
-    fixtureCatalog.getCatalog().then((next) => {
-      if (!active) {
-        return;
-      }
-      setCatalog(next);
-      const size = defaultSize(next.product.sizes);
-      const color = defaultColor(next.product.colors);
-      if (size) {
-        dispatch(sizeSelected(size));
-      }
-      if (color) {
-        dispatch(colorSelected(color.id));
-      }
-    });
-    return () => {
-      active = false;
-    };
-  }, [dispatch]);
+    if (!catalog || defaultsApplied.current) {
+      return;
+    }
+    defaultsApplied.current = true;
+    const size = defaultSize(catalog.product.sizes);
+    const color = defaultColor(catalog.product.colors);
+    if (size) {
+      dispatch(sizeSelected(size));
+    }
+    if (color) {
+      dispatch(colorSelected(color.id));
+    }
+  }, [catalog, dispatch]);
 
   if (!catalog) {
-    return (
-      <View style={styles.loading}>
-        <ActivityIndicator color={theme.color.text} />
-      </View>
-    );
+    if (catalogQuery.isError && !catalogQuery.isFetching) {
+      return <CatalogFallback mode="error" onRetry={() => catalogQuery.refetch()} />;
+    }
+    return <CatalogFallback />;
   }
 
   const product = catalog.product;
@@ -102,12 +96,3 @@ export function ProductScreenContainer() {
     />
   );
 }
-
-const styles = StyleSheet.create({
-  loading: {
-    alignItems: "center",
-    backgroundColor: theme.color.background,
-    flex: 1,
-    justifyContent: "center",
-  },
-});
