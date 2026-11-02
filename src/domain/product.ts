@@ -55,6 +55,38 @@ export function defaultColor(
   return colors.find((color) => color.id === preferredId) ?? colors[0] ?? null;
 }
 
+export type ProductSelection = {
+  productId: string | null;
+  size: Size | null;
+  colorId: string | null;
+};
+
+export function resolveSelection(product: Product, selection: ProductSelection): ProductSelection {
+  const sameProduct = selection.productId === product.id;
+  const size =
+    sameProduct && selection.size !== null && product.sizes.includes(selection.size)
+      ? selection.size
+      : defaultSize(product.sizes);
+  const colorId =
+    sameProduct &&
+    selection.colorId !== null &&
+    product.colors.some((color) => color.id === selection.colorId)
+      ? selection.colorId
+      : (defaultColor(product.colors)?.id ?? null);
+  return { productId: product.id, size, colorId };
+}
+
+export function isSelectionOffered(
+  product: Product,
+  size: Size | null,
+  colorId: string | null,
+): boolean {
+  if (size === null || colorId === null) {
+    return false;
+  }
+  return product.sizes.includes(size) && product.colors.some((color) => color.id === colorId);
+}
+
 export function isProductVisible(activeCategory: Category, productCategory: Category): boolean {
   return activeCategory === productCategory;
 }

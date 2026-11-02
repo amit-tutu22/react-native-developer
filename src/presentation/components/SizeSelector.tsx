@@ -20,6 +20,7 @@ export function SizeSelector({ sizes, selected, onSelect }: SizeSelectorProps) {
             accessibilityLabel={`Size ${size}`}
             accessibilityRole="button"
             accessibilityState={{ selected: isSelected }}
+            hitSlop={textHitSlop}
             key={size}
             onPress={() => onSelect(size)}
             testID={`size-${size}`}
@@ -31,6 +32,8 @@ export function SizeSelector({ sizes, selected, onSelect }: SizeSelectorProps) {
     </View>
   );
 }
+
+const textHitSlop = { top: 14, right: 10, bottom: 14, left: 10 };
 
 const styles = StyleSheet.create({
   row: {

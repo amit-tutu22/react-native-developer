@@ -39,6 +39,8 @@ Jest and React Native Testing Library cover the domain rules, the Redux slice, t
 
 ### Functional flows in the suite
 
+These run in Jest. They do not drive a phone.
+
 - The product screen shows Tiger Medium Red, AED 250, sizes S M L XL, four colors, the description, and four related images.
 - XL and the forest swatch can be added to the bag, and the count becomes 1.
 - Searching for "blue" leaves the matching thumbnail and hides the others.
@@ -61,18 +63,17 @@ Maestro or Detox can run the same journeys against a dev client. They are not re
 The UI never calls `fetch`.
 
 - `src/domain` holds product, cart, price, and account types, plus pure rules.
-- `src/application/ports` defines `ProductCatalog` and `AccountGateway`.
-- `src/infrastructure` maps remote JSON and owns the RTK Query endpoints. Tests replace `baseQuery` through `configureServices`.
-- `src/presentation` is one component per region of the layout. Screens compose those components.
+- `src/infrastructure` maps remote JSON and owns the RTK Query endpoints. Tests replace `baseQuery` through `configureServices` before creating a store.
+- `src/presentation` is one component per region of the layout. Screens compose those components and call the RTK Query hooks.
 - `src/store` keeps category, search, size, color, the bag, and the lightbox in `productUiSlice`. Server data stays in RTK Query.
 
 ### SOLID
 
 - Each component does one job. `SizeSelector` reports a size. `formatPrice` formats money. `mapCatalog` turns JSON into domain objects.
 - Sizes, colors, and related products render from arrays. A new color is data, not a new component.
-- The HTTP catalog and the test fake both satisfy the same query boundary, so screens behave the same with either.
-- Catalog and account are separate ports. A selector component receives only the props it renders.
-- Screens depend on hooks and ports. The GitHub URL sits behind `EXPO_PUBLIC_CATALOG_URL`.
+- The HTTP catalog and the test fake both satisfy the same RTK Query base query, so screens behave the same with either.
+- Catalog and account are separate endpoints. A selector component receives only the props it renders.
+- Screens depend on those hooks. The GitHub URL sits behind `EXPO_PUBLIC_CATALOG_URL`.
 
 ## What the screen does
 
@@ -96,9 +97,11 @@ Each assessment step is its own branch, cut from the previous step.
 
 ## EAS Build and updates
 
-`eas.json` has `development`, `preview`, and `production` profiles. Each profile receives `EXPO_PUBLIC_CATALOG_URL`, so a cloud build still loads the catalog. `runtimeVersion` follows the app version in `app.json`, which is what an OTA update must match. No tokens are committed.
+`eas.json` has `development`, `preview`, and `production` profiles. Each profile has a matching `channel` and receives `EXPO_PUBLIC_CATALOG_URL`, so a cloud build still loads the catalog. `development` is an internal distribution profile. It is not a development client: `expo-dev-client` is not installed and `developmentClient` is not set.
 
-These commands need an Expo account. They were not run in this workspace because no Expo login is available here.
+`runtimeVersion` follows the app version in `app.json`. An OTA update must use that same runtime, so the version has to be bumped when native code changes. `autoIncrement` on the production profile only raises the store build number. It does not change the runtime. `eas update` has to target the channel of the installed binary, for example `--channel preview` for a preview build. Publishing to a branch named preview does not by itself attach the update to that binary.
+
+No Expo project id, updates URL, installable binary, or published update exists yet. No tokens are committed. These commands need an Expo account and were not run here:
 
 ```bash
 npx eas-cli login
@@ -106,10 +109,10 @@ npx eas-cli init
 npx eas-cli update:configure
 npx eas-cli build -p ios --profile preview
 npx eas-cli build -p android --profile preview
-npx eas-cli update --branch preview --message "Catalog update"
+npx eas-cli update --channel preview --message "Catalog update"
 ```
 
-`eas init` writes `extra.eas.projectId`. `eas update:configure` writes `updates.url`. After the binaries exist, `eas update` publishes a JavaScript update onto that runtime. Build URLs from the Expo dashboard can be pasted below once those commands succeed.
+`eas init` writes `extra.eas.projectId`. `eas update:configure` writes `updates.url`. After a binary is installed, publish to its channel and confirm the device downloads that update. Record the build and update ids, and the rollback, once those commands succeed.
 
 After login, print the resolved preview profile with:
 

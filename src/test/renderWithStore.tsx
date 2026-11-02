@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
 import { Provider } from "react-redux";
-import { render } from "@testing-library/react-native";
+import { cleanup, render } from "@testing-library/react-native";
 
 import type { AppBaseQuery } from "@/infrastructure/http/services";
 import { configureServices, resetServices } from "@/infrastructure/http/services";
@@ -19,6 +19,7 @@ export const characterPayload = {
 
 type FakeEndpoint = {
   data?: unknown;
+  sequence?: readonly unknown[];
   failures?: number;
   alwaysFail?: boolean;
   shouldFail?: () => boolean;
@@ -33,6 +34,10 @@ function fakeQuery(endpoint: FakeEndpoint | undefined, fallback: unknown, calls:
       (endpoint?.failures !== undefined && calls.count <= endpoint.failures);
     if (shouldFail) {
       return { error: { status: 500, data: "failed" } };
+    }
+    if (endpoint?.sequence && endpoint.sequence.length > 0) {
+      const index = Math.min(calls.count - 1, endpoint.sequence.length - 1);
+      return { data: endpoint.sequence[index] };
     }
     return { data: endpoint?.data ?? fallback };
   };
@@ -53,6 +58,7 @@ export function installFakeServices(options?: { catalog?: FakeEndpoint; account?
 }
 
 export async function renderWithStore(ui: ReactElement) {
+  await cleanup();
   const store = createAppStore();
   const view = await render(<Provider store={store}>{ui}</Provider>);
   return { store, ...view };

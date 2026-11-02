@@ -3,7 +3,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { formatPrice } from "@/domain/money";
 import type { Category, Product, RelatedProduct, Size } from "@/domain/product";
-import { CATEGORIES } from "@/domain/product";
+import { CATEGORIES, isSelectionOffered } from "@/domain/product";
 import { AddToBagButton } from "@/presentation/components/AddToBagButton";
 import { CategoryNav } from "@/presentation/components/CategoryNav";
 import { ColorSelector } from "@/presentation/components/ColorSelector";
@@ -84,7 +84,7 @@ export function ProductScreen({
               />
               <AddToBagButton
                 count={cartCount}
-                disabled={selectedSize === null || selectedColorId === null}
+                disabled={!isSelectionOffered(product, selectedSize, selectedColorId)}
                 onPress={onAddToBag}
               />
               <Description details={product.description.details} summary={product.description.summary} />

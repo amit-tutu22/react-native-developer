@@ -20,6 +20,7 @@
   "exclude": [
     "**/*.test.ts",
     "**/*.test.tsx",
-    "jest.setup.ts"
+    "jest.setup.ts",
+    "src/test/**/*.ts"
   ]
 }

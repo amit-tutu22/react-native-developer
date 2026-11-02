@@ -35,9 +35,11 @@ describe("productUiSlice", () => {
     expect(state.selectedCategory).toBe("KIDS");
   });
 
-  it("stores a trimmed search query", () => {
+  it("keeps spaces in the search query and still matches without case sensitivity", () => {
     const state = productUiReducer(initialProductUiState, searchChanged("  blue  "));
-    expect(state.searchQuery).toBe("blue");
+    expect(state.searchQuery).toBe("  blue  ");
+    const related = [{ id: "blue", imageUrl: "https://example.com/blue.jpg", title: "Tiger Light Blue" }];
+    expect(selectFilteredRelated(related, state.searchQuery).map((item) => item.id)).toEqual(["blue"]);
   });
 
   it("adds a bag line and increases quantity for the same selection", () => {

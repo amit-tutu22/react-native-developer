@@ -15,6 +15,7 @@ export function ProductImage({ imageUrl, onExpand }: ProductImageProps) {
       <Pressable
         accessibilityLabel="Expand image"
         accessibilityRole="button"
+        hitSlop={expandHitSlop}
         onPress={onExpand}
         style={styles.expand}
         testID="expand-image"
@@ -35,6 +36,8 @@ function ExpandIcon() {
     </View>
   );
 }
+
+const expandHitSlop = { top: 8, right: 8, bottom: 8, left: 8 };
 
 const styles = StyleSheet.create({
   panel: {

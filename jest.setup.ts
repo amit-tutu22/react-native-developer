@@ -1,12 +1,21 @@
 import { cleanup } from "@testing-library/react-native";
 
-global.requestAnimationFrame = (callback: FrameRequestCallback) => {
+import { routerMock } from "./src/test/routerMock";
+
+process.env.EXPO_PUBLIC_CATALOG_URL = "https://example.com/catalog.json";
+
+globalThis.requestAnimationFrame = (callback: FrameRequestCallback) => {
   callback(Date.now());
   return 0;
 };
 
 afterEach(async () => {
   await cleanup();
+  routerMock.push.mockClear();
+  routerMock.back.mockClear();
+  routerMock.replace.mockClear();
+  routerMock.canGoBack.mockReset();
+  routerMock.canGoBack.mockReturnValue(true);
 });
 
 jest.mock("expo-image", () => {
@@ -17,10 +26,10 @@ jest.mock("expo-image", () => {
   };
 });
 
-jest.mock("expo-router", () => ({
-  useRouter: () => ({
-    push: jest.fn(),
-    back: jest.fn(),
-  }),
-  Stack: ({ children }: { children: unknown }) => children,
-}));
+jest.mock("expo-router", () => {
+  const { routerMock: router } = require("./src/test/routerMock");
+  return {
+    useRouter: () => router,
+    Stack: ({ children }: { children: unknown }) => children,
+  };
+});

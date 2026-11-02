@@ -1,7 +1,6 @@
 import { useRouter } from "expo-router";
-import { useEffect, useRef } from "react";
 
-import { defaultColor, defaultSize } from "@/domain/product";
+import { isSelectionOffered } from "@/domain/product";
 import { useGetCatalogQuery } from "@/infrastructure/http/catalogApi";
 import { CatalogFallback } from "@/presentation/components/CatalogFallback";
 import { ProductScreen } from "@/presentation/ProductScreen";
@@ -38,22 +37,6 @@ export function ProductScreenContainer() {
   const lightboxImageUrl = useAppSelector(selectLightboxImageUrl);
   const catalogQuery = useGetCatalogQuery();
   const catalog = catalogQuery.data;
-  const defaultsApplied = useRef(false);
-
-  useEffect(() => {
-    if (!catalog || defaultsApplied.current) {
-      return;
-    }
-    defaultsApplied.current = true;
-    const size = defaultSize(catalog.product.sizes);
-    const color = defaultColor(catalog.product.colors);
-    if (size) {
-      dispatch(sizeSelected(size));
-    }
-    if (color) {
-      dispatch(colorSelected(color.id));
-    }
-  }, [catalog, dispatch]);
 
   if (!catalog) {
     if (catalogQuery.isError && !catalogQuery.isFetching) {
@@ -63,6 +46,7 @@ export function ProductScreenContainer() {
   }
 
   const product = catalog.product;
+  const offered = isSelectionOffered(product, selectedSize, selectedColorId);
 
   return (
     <ProductScreen
@@ -71,7 +55,7 @@ export function ProductScreenContainer() {
       lightboxImageUrl={lightboxImageUrl}
       lightboxOpen={lightboxOpen}
       onAddToBag={() => {
-        if (!selectedSize || !selectedColorId) {
+        if (!offered || selectedSize === null || selectedColorId === null) {
           return;
         }
         dispatch(

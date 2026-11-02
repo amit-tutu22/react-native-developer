@@ -11,7 +11,13 @@ export function AccountScreenContainer() {
     <AccountScreen
       isError={profileQuery.isError}
       isFetching={profileQuery.isFetching}
-      onBack={() => router.back()}
+      onBack={() => {
+        if (router.canGoBack()) {
+          router.back();
+          return;
+        }
+        router.replace("/");
+      }}
       onRetry={() => profileQuery.refetch()}
       profile={profileQuery.data}
     />

@@ -18,6 +18,7 @@ export function CategoryNav({ categories, selected, onSelect }: CategoryNavProps
           <Pressable
             accessibilityRole="button"
             accessibilityState={{ selected: isSelected }}
+            hitSlop={textHitSlop}
             key={category}
             onPress={() => onSelect(category)}
             testID={`category-${category}`}
@@ -29,6 +30,8 @@ export function CategoryNav({ categories, selected, onSelect }: CategoryNavProps
     </View>
   );
 }
+
+const textHitSlop = { top: 14, right: 8, bottom: 14, left: 8 };
 
 const styles = StyleSheet.create({
   row: {

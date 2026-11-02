@@ -4,10 +4,12 @@ import { addLine, cartCount, type CartDraft, type CartLine } from "@/domain/cart
 import {
   filterRelatedProducts,
   isProductVisible,
+  resolveSelection,
   type Category,
   type RelatedProduct,
   type Size,
 } from "@/domain/product";
+import { catalogApi } from "@/infrastructure/http/catalogApi";
 
 export type LightboxState = {
   open: boolean;
@@ -17,6 +19,7 @@ export type LightboxState = {
 export type ProductUiState = {
   selectedCategory: Category;
   searchQuery: string;
+  selectedProductId: string | null;
   selectedSize: Size | null;
   selectedColorId: string | null;
   cart: CartLine[];
@@ -26,6 +29,7 @@ export type ProductUiState = {
 export const initialProductUiState: ProductUiState = {
   selectedCategory: "MEN",
   searchQuery: "",
+  selectedProductId: null,
   selectedSize: "M",
   selectedColorId: "black",
   cart: [],
@@ -46,7 +50,7 @@ const productUiSlice = createSlice({
       state.selectedCategory = action.payload;
     },
     searchChanged(state, action: PayloadAction<string>) {
-      state.searchQuery = action.payload.trim();
+      state.searchQuery = action.payload;
     },
     addedToBag(state, action: PayloadAction<CartDraft>) {
       state.cart = addLine(state.cart, action.payload);
@@ -65,6 +69,18 @@ const productUiSlice = createSlice({
       state.lightbox.open = false;
       state.lightbox.imageUrl = null;
     },
+  },
+  extraReducers: (builder) => {
+    builder.addMatcher(catalogApi.endpoints.getCatalog.matchFulfilled, (state, action) => {
+      const next = resolveSelection(action.payload.product, {
+        productId: state.selectedProductId,
+        size: state.selectedSize,
+        colorId: state.selectedColorId,
+      });
+      state.selectedProductId = next.productId;
+      state.selectedSize = next.size;
+      state.selectedColorId = next.colorId;
+    });
   },
 });
 
@@ -88,6 +104,8 @@ export type ProductUiRoot = {
 export const selectActiveCategory = (state: ProductUiRoot) => state.productUi.selectedCategory;
 
 export const selectSearchQuery = (state: ProductUiRoot) => state.productUi.searchQuery;
+
+export const selectSelectedProductId = (state: ProductUiRoot) => state.productUi.selectedProductId;
 
 export const selectSelectedSize = (state: ProductUiRoot) => state.productUi.selectedSize;
 

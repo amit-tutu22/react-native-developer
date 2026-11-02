@@ -12,8 +12,8 @@ export function Description({ summary, details }: DescriptionProps) {
     <View style={styles.block}>
       <Text style={styles.heading}>DESCRIPTION</Text>
       <Text style={styles.summary}>{summary}</Text>
-      {details.map((line) => (
-        <Text key={line} style={styles.detail}>
+      {details.map((line, index) => (
+        <Text key={`${index}-${line}`} style={styles.detail}>
           {line}
         </Text>
       ))}

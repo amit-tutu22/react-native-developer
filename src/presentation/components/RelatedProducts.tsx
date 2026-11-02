@@ -1,5 +1,5 @@
 import { Image } from "expo-image";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
 import type { RelatedProduct } from "@/domain/product";
 import { theme } from "@/presentation/theme";
@@ -14,20 +14,29 @@ export function RelatedProducts({ products, onPress }: RelatedProductsProps) {
     <View style={styles.block}>
       <View style={styles.divider} />
       <Text style={styles.heading}>SEE MORE PRODUCTS</Text>
-      <View style={styles.row}>
-        {products.map((product) => (
-          <Pressable
-            accessibilityLabel={product.title ?? "Related product"}
-            accessibilityRole="button"
-            key={product.id}
-            onPress={() => onPress(product.imageUrl)}
-            style={styles.thumb}
-            testID={`related-${product.id}`}
-          >
-            <Image contentFit="cover" source={{ uri: product.imageUrl }} style={styles.image} />
-          </Pressable>
-        ))}
-      </View>
+      <FlatList
+        contentContainerStyle={styles.row}
+        data={products}
+        horizontal
+        initialNumToRender={10}
+        keyExtractor={(item) => item.id}
+        nestedScrollEnabled
+        renderItem={({ item, index }) => {
+          const title = item.title?.trim();
+          return (
+            <Pressable
+              accessibilityLabel={title ? title : `View related product ${index + 1}`}
+              accessibilityRole="button"
+              onPress={() => onPress(item.imageUrl)}
+              style={styles.thumb}
+              testID={`related-${item.id}`}
+            >
+              <Image contentFit="cover" source={{ uri: item.imageUrl }} style={styles.image} />
+            </Pressable>
+          );
+        }}
+        showsHorizontalScrollIndicator={false}
+      />
     </View>
   );
 }
@@ -49,8 +58,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    gap: 12,
   },
   thumb: {
     backgroundColor: theme.color.panel,
