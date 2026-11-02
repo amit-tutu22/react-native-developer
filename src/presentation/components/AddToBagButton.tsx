@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   label: {
-    color: "#8a8a8a",
+    color: "#4a4a4a",
     fontSize: 12,
     fontWeight: "600",
     letterSpacing: 1.2,

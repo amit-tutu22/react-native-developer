@@ -26,7 +26,7 @@ export function CatalogFallback({
           </Pressable>
         </>
       ) : (
-        <ActivityIndicator color={theme.color.text} />
+        <ActivityIndicator accessibilityLabel="Loading" color={theme.color.text} />
       )}
     </View>
   );

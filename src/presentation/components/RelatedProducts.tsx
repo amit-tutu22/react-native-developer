@@ -17,6 +17,7 @@ export function RelatedProducts({ products, onPress }: RelatedProductsProps) {
       <View style={styles.row}>
         {products.map((product) => (
           <Pressable
+            accessibilityLabel={product.title ?? "Related product"}
             accessibilityRole="button"
             key={product.id}
             onPress={() => onPress(product.imageUrl)}
@@ -41,7 +42,7 @@ const styles = StyleSheet.create({
     marginBottom: 22,
   },
   heading: {
-    color: "#9a9a9a",
+    color: theme.color.muted,
     fontSize: 12,
     fontWeight: "600",
     letterSpacing: 0.8,

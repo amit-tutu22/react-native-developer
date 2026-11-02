@@ -9,6 +9,9 @@ describe("product screen", () => {
     await renderWithStore(<ProductScreenContainer />);
 
     expect(await screen.findByText("Tiger Medium Red")).toBeTruthy();
+    expect(screen.getByLabelText("Search products")).toBeTruthy();
+    expect(screen.getByLabelText("Size M")).toBeTruthy();
+    expect(screen.getByLabelText("Tiger Forest Green")).toBeTruthy();
     expect(screen.getByText("AED 250")).toBeTruthy();
     expect(screen.getByText("S")).toBeTruthy();
     expect(screen.getByText("M")).toBeTruthy();

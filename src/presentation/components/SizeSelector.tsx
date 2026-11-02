@@ -17,6 +17,7 @@ export function SizeSelector({ sizes, selected, onSelect }: SizeSelectorProps) {
         const isSelected = size === selected;
         return (
           <Pressable
+            accessibilityLabel={`Size ${size}`}
             accessibilityRole="button"
             accessibilityState={{ selected: isSelected }}
             key={size}
@@ -44,7 +45,7 @@ const styles = StyleSheet.create({
     marginRight: 4,
   },
   size: {
-    color: "#c8c8c8",
+    color: theme.color.muted,
     fontSize: 16,
     fontWeight: "500",
   },

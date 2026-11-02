@@ -11,6 +11,7 @@ export function SearchBar({ value, onChange }: SearchBarProps) {
   return (
     <View style={styles.field}>
       <TextInput
+        accessibilityLabel="Search products"
         autoCapitalize="none"
         autoCorrect={false}
         onChangeText={onChange}
@@ -56,14 +57,14 @@ const styles = StyleSheet.create({
     width: 16,
   },
   lens: {
-    borderColor: "#9a9a9a",
+    borderColor: theme.color.muted,
     borderRadius: 7,
     borderWidth: 1.5,
     height: 11,
     width: 11,
   },
   handle: {
-    backgroundColor: "#9a9a9a",
+    backgroundColor: theme.color.muted,
     height: 6,
     left: 9,
     position: "absolute",

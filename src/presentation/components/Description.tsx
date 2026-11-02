@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
     marginTop: 28,
   },
   heading: {
-    color: "#9a9a9a",
+    color: theme.color.muted,
     fontSize: 12,
     fontWeight: "600",
     letterSpacing: 0.8,
